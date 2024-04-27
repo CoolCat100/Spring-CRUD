@@ -1,0 +1,13 @@
+spring:
+  application:
+     name: crudUsers
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: root
+    url: jdbc:postgresql://localhost:5432/crudUsers
+    username: postgres
+  jpa:
+    properties:
+       hibernate:
+         ddl-auto: update
+         dialect: org.hibernate.dialect.PostgreSQL9Dialect
