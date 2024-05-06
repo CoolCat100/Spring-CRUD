@@ -3,12 +3,16 @@ package com.example.SpringCRUD.controller;
 import com.example.SpringCRUD.domain.User;
 import com.example.SpringCRUD.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Controller
-@RequestMapping("/users")
+@RequestMapping()
 public class UserController {
     private final UserService userService;
 
@@ -16,35 +20,35 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
     @GetMapping()
-    public String showUsers(Model model) {
-        model.addAttribute("users", userService.getUsers());
-        return "users";
+    public String hello() {
+        return "hello";
+    }
+
+    @GetMapping("/user")
+    public String showUser(Model model) {
+        model.addAttribute("user", userService.getCurrentUser());
+        return "user";
+    }
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        userService.logout(request);
+        return "redirect:/";
     }
     @GetMapping("/new")
     public String newUser(Model model) {
         model.addAttribute("user", new User());
         return "new";
     }
-    @PostMapping()
+    @PostMapping("/")
     public String create(@ModelAttribute("user") User user) {
         userService.addUser(user);
-        return "redirect:/users";
+        return "redirect:/user";
     }
-    @GetMapping("/{id}/edit")
-    public String edit(Model model, @PathVariable("id") int id) {
-        model.addAttribute("user", userService.getUser(id));
-        return "edit";
-    }
-    @PatchMapping("/{id}")
+
+    @PatchMapping("/user/{id}")
     public String update(@ModelAttribute("user") User user, @PathVariable("id") int id) {
         userService.updateUser(id, user);
-        return "redirect:/users";
-    }
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") int id) {
-        userService.deleteUser(id);
-        return "redirect:/users";
+        return "redirect:/user";
     }
 }

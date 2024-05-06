@@ -5,20 +5,28 @@
     <title>new User</title>
 </head>
 <body>
-<form th:method="POST" th:action="@{/users}" th:object="${user}">
+<form th:method="POST" th:action="@{/}" th:object="${user}">
     <div>
-    <label for="name">Name</label>
-    <input type="text" th:field="*{name}" id="name">
-    <br>
+        <label for="login">Login</label>
+        <input type="text" th:field="*{login}" id="login">
+        <br>
 
-    <label for="age">Age</label>
-    <input type="text" th:field="*{age}" id="age">
-    <br>
+        <label for="password">Password</label>
+        <input type="text" th:field="*{password}" id="password">
+        <br>
 
-    <label for="profession">Profession</label>
-    <input type="text" th:field="*{profession}" id="profession">
-    <br>
-    <input type="submit" value="Add User">
+        <label for="name">Name</label>
+        <input type="text" th:field="*{name}" id="name">
+        <br>
+
+        <label for="age">Age</label>
+        <input type="text" th:field="*{age}" id="age">
+        <br>
+
+        <label for="profession">Profession</label>
+        <input type="text" th:field="*{profession}" id="profession">
+        <br>
+        <input type="submit" value="Add User">
     </div>
 </form>
 </body>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello user</title>
+</head>
+<body>
+<form th:method="Post" th:action="@{/logout}">
+    <label>
+        <input type="submit" value="Exit">
+    </label>
+
+</form>
+<div>
+    <p>Hello Guest</p>
+</div>
+<form th:method="GET" th:action="@{/new}">
+    <label>
+        <input type="submit" value="Registration">
+    </label>
+</form>
+<form th:method="GET" th:action="@{/user}">
+    <label>
+        <input type="submit" value="Sign in">
+    </label>
+</form>
+</body>
+</html>
