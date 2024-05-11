@@ -1,8 +1,9 @@
 package com.example.SpringCRUD.service;
 
+import com.example.SpringCRUD.config.SecurityConfig;
 import com.example.SpringCRUD.domain.Role;
 import com.example.SpringCRUD.domain.User;
-import com.example.SpringCRUD.repo.RoleRepo;
+import com.example.SpringCRUD.dto.UserDTO;
 import com.example.SpringCRUD.repo.UserRepo;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -19,35 +21,45 @@ import java.util.Set;
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepo userRepo;
-    private final RoleRepo roleRepo;
+    private final MappingUtils mappingUtils;
+    private final RoleService roleService;
 
-    public UserService(UserRepo userRepo, RoleRepo roleRepo) {
+    public UserService(UserRepo userRepo, MappingUtils mappingUtils, RoleService roleService) {
         this.userRepo = userRepo;
-        this.roleRepo = roleRepo;
-    }
-
-    public Role getRoleAdmin() {
-        return roleRepo.findById(2L).get();
+        this.mappingUtils = mappingUtils;
+        this.roleService = roleService;
     }
 
     public List<User> getUsers() {
         return (List<User>) userRepo.findAll();
     }
 
-    public void addUser(User user) {
+    public boolean addUser(User user) {
+        if (getUsers().stream().anyMatch(users -> user.getLogin().equals(users.getLogin()))) {
+            System.out.println("false");
+            return false;
+        }
         user.setRoles(Collections.singleton(new Role(1L, "ROLE_USER")));
+        String pass = SecurityConfig.passwordEncoder().encode(user.getPassword());
+        user.setPassword(pass);
         userRepo.save(user);
+        System.out.println("true");
+        return true;
     }
 
     public User getUser(long id) {
         return userRepo.findById(id).orElse(null);
     }
 
-    public void updateUser(long id, User user) {
+    public void updateUser(long id, User user, String pass) {
         User oldUser = userRepo.findById(id).orElse(null);
         oldUser.setName(user.getName());
         oldUser.setAge(user.getAge());
         oldUser.setProfession(user.getProfession());
+        if (pass != null) {
+            String newPass = SecurityConfig.passwordEncoder().encode(pass);
+            oldUser.setPassword(newPass);
+        }
         userRepo.save(oldUser);
     }
 
@@ -77,23 +89,64 @@ public class UserService implements UserDetailsService {
 
     private String getCurrentUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(auth.getName());
         return auth.getName();
     }
+
     public User getCurrentUser() {
         return userRepo.findByLogin(getCurrentUsername());
     }
+
     public Set<Role> getRoles(User user) {
         return user.getRoles();
     }
-    public void changeRole(long id) {
+    public boolean isRoleUser(int id) {
+        long roleUserId = 1;
+        User user = getUser(id);
+        Set<Role> roles = user.getRoles();
+        return roles.contains(roleService.getRoleById(roleUserId));
+    }
+    public void checkRoleUser(long id, String isTheUser) {
+        long roleId = 1;
+        if (isTheUser.equals("on")) {
+            addCurrentRole(id, roleId);
+        } else {
+            deleteCurrentRole(id, roleId);
+        }
+    }
+    public boolean isAdmin(long id) {
+        long roleId = 2;
+        User user = getUser(id);
+        Set<Role> roles = user.getRoles();
+        return roles.contains(roleService.getRoleById(roleId));
+    }
+    public void checkRoleAdmin(long id, String isTheAdmin) {
+        long roleId = 2;
+        if (isTheAdmin.equals("on")) {
+            addCurrentRole(id, roleId);
+        } else {
+            deleteCurrentRole(id, roleId);
+        }
+    }
+
+    public void addCurrentRole(long id, long roleId) {
         User userEdit = getUser(id);
         Set<Role> roles = userEdit.getRoles();
-        if (roles.contains(getRoleAdmin())) {
-            roles.remove(getRoleAdmin());
-        } else {
-            roles.add(getRoleAdmin());
+        if (!roles.contains(roleService.getRoleById(roleId))) {
+            roles.add(roleService.getRoleById(roleId));
+            updateUser(userEdit.getId(), userEdit, null);
         }
-        updateUser(userEdit.getId(), userEdit);
+    }
+
+    public void deleteCurrentRole(long id, long roleId) {
+        User userEdit = getUser(id);
+        Set<Role> roles = userEdit.getRoles();
+        if (roles.contains(roleService.getRoleById(roleId))) {
+            roles.remove(roleService.getRoleById(roleId));
+            updateUser(userEdit.getId(), userEdit, null);
+        }
+    }
+    public List<String> getUserRolesDTO(User user) {
+        UserDTO userDTO = mappingUtils.mapToUserDTO(user);
+        return new ArrayList<>(userDTO.getRoles());
     }
 }

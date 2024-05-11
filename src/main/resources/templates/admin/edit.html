@@ -11,16 +11,21 @@
     </label>
 
 </form>
-<form th:method="Post" th:action="@{/admin/{id}(id=${user.getId()})}" th:object="${user}">
-    <label>
-        <input type="submit" value="change role">
-    </label>
 
-</form>
 <form th:method="PATCH" th:action="@{/admin/{id}(id=${user.getId()})}" th:object="${user}">
     <div>
+        <label>
+            <input type="checkbox" name="adminRole" th:checked="${adminRole}"/> admin
+        </label>
+        <br>
+
+        <label>
+            <input type="checkbox" name="userRole" th:checked="${userRole}"/> user
+        </label>
+        <br>
+
         <label for="password">Password</label>
-        <input type="text" th:field="*{password}" id="password">
+        <input type="text" name="password" id="password">
         <br>
 
         <label for="name">Name</label>

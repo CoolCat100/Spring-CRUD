@@ -40,15 +40,18 @@ public class UserController {
         model.addAttribute("user", new User());
         return "new";
     }
-    @PostMapping("/")
+    @PostMapping("/new")
     public String create(@ModelAttribute("user") User user) {
-        userService.addUser(user);
-        return "redirect:/user";
+        return userService.addUser(user) ? "redirect:/user" : "redirect:/unsuccessful";
+    }
+    @GetMapping("/unsuccessful")
+    public String unsuccessful() {
+        return "unsuccessful";
     }
 
-    @PatchMapping("/user/{id}")
-    public String update(@ModelAttribute("user") User user, @PathVariable("id") int id) {
-        userService.updateUser(id, user);
-        return "redirect:/user";
-    }
+//    @PatchMapping("/user/{id}")
+//    public String update(@ModelAttribute("user") User user, @PathVariable("id") int id) {
+//        userService.updateUser(id, user);
+//        return "redirect:/user";
+//    }
 }

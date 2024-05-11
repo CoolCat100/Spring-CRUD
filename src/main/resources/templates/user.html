@@ -19,7 +19,6 @@
 <table border="1">
     <tr>
         <th>Login</th>
-        <th>Password</th>
         <th>Name</th>
         <th>Age</th>
         <th>Profession</th>
@@ -27,7 +26,6 @@
 
     <tr th:each="user : ${user}">
         <td th:utext="${user.getLogin()}">login></td>
-        <td th:utext="${user.getPassword()}">password></td>
         <td th:utext="${user.getName()}">name></td>
         <td th:utext="${user.getAge()}">age</td>
         <td th:utext="${user.getProfession()}">profession</td>
