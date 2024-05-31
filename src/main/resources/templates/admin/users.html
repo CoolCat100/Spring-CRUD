@@ -3,28 +3,33 @@
 
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>User</title>
     <style>table th, table td {padding: 5px;}</style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
 <body>
-<form th:method="Post" th:action="@{/logout}">
-    <label>
-        <input type="submit" value="Exit">
-    </label>
 
-</form>
-<h1>Users</h1>
-<form th:method="GET" th:action="@{/admin/new}">
-<label>
-    <input type="submit" value="Add new User">
-</label>
-</form>
+<h1>Admin panel</h1>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/admin/users">User table</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="/new">New User</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+</nav>
+
+<h1>All users</h1>
 
 <table border="1">
     <tr>
         <th>Login</th>
-        <th>Password</th>
         <th>Name</th>
         <th>Age</th>
         <th>Profession</th>
@@ -35,7 +40,6 @@
 
     <tr th:each="user : ${users}">
         <td th:utext="${user.getLogin()}">login></td>
-        <td th:utext="${user.getPassword()}">password></td>
         <td th:utext="${user.getName()}">name></td>
         <td th:utext="${user.getAge()}">age</td>
         <td th:utext="${user.getProfession()}">profession</td>
@@ -46,6 +50,12 @@
     </tr>
 
 </table>
+<form th:method="Post" th:action="@{/logout}">
+    <label>
+        <input type="submit" value="Logout">
+    </label>
+
+</form>
 </body>
 
 </html>

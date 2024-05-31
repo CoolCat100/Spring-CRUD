@@ -1,5 +1,6 @@
 package com.example.SpringCRUD.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,7 @@ public class Role implements GrantedAuthority {
     private Long id;
     private String role;
     @ManyToMany(mappedBy = "roles")
+    @JsonBackReference
     private Set<User> users;
     public Role(Long id, String role) {
         this.id = id;

@@ -14,5 +14,10 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 public class UserDTO {
-    private Set<String> roles;
+    private String name;
+    private int age;
+    private String profession;
+    private String login; // уникальное значение
+    private String password;
+    private String[] roles;
 }

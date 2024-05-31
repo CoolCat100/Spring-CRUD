@@ -2,6 +2,8 @@ package com.example.SpringCRUD.domain;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,6 +31,7 @@ public class User implements UserDetails {
     private String login; // уникальное значение
     private String password;
     @ManyToMany(fetch = FetchType.EAGER)
+    @JsonManagedReference
     private Set<Role> roles;
     public User(String name, int age, String profession, String login, String password, Set<Role> roles) {
         this.name = name;

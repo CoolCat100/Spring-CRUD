@@ -1,6 +1,7 @@
 package com.example.SpringCRUD.controller;
 
 import com.example.SpringCRUD.domain.User;
+import com.example.SpringCRUD.dto.UserDTO;
 import com.example.SpringCRUD.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -11,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Controller
-@RequestMapping()
+@RestController
 public class UserController {
     private final UserService userService;
 
@@ -22,14 +22,10 @@ public class UserController {
     }
     @GetMapping()
     public String hello() {
-        return "hello";
+        return "index";
     }
 
-    @GetMapping("/user")
-    public String showUser(Model model) {
-        model.addAttribute("user", userService.getCurrentUser());
-        return "user";
-    }
+
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
         userService.logout(request);
@@ -42,7 +38,8 @@ public class UserController {
     }
     @PostMapping("/new")
     public String create(@ModelAttribute("user") User user) {
-        return userService.addUser(user) ? "redirect:/user" : "redirect:/unsuccessful";
+        String role = "user";
+        return userService.addUser(user, role) ? "redirect:/user" : "redirect:/unsuccessful";
     }
     @GetMapping("/unsuccessful")
     public String unsuccessful() {
@@ -54,4 +51,8 @@ public class UserController {
 //        userService.updateUser(id, user);
 //        return "redirect:/user";
 //    }
+@RequestMapping(method = RequestMethod.POST, value = "/registration", produces = "application/json")
+public String create(@RequestBody UserDTO user) {
+    return userService.addUserDto(user) ? "{\"status\":\"success\"}" : "{\"status\":\"errorLogin\"}";
+}
 }

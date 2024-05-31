@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class MappingUtils {
-    public UserDTO mapToUserDTO(User user) {
-        UserDTO userDTO = new UserDTO();
-        Set<Role> userRoles = user.getRoles();
-        Set<String> roles = userRoles.stream().map(Role::getRole).collect(Collectors.toSet());
-        userDTO.setRoles(roles);
-        return userDTO;
-    }
+//    public UserDTO mapToUserDTO(User user) {
+//        UserDTO userDTO = new UserDTO();
+//        Set<Role> userRoles = user.getRoles();
+//        Set<String> roles = userRoles.stream().map(Role::getRole).collect(Collectors.toSet());
+//        userDTO.setRoles(roles);
+//        return userDTO;
+//    }
 }
