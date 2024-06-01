@@ -8,7 +8,7 @@
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <style>
-        .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+        .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
             background-color: #007bff; /* Синий цвет фона для активной вкладки */
         }
     </style>
@@ -86,12 +86,9 @@
                 modal.find('#nameEditId').val(dataUserEdit.name)
                 modal.find('#ageEditId').val(dataUserEdit.age)
                 modal.find('#professionEditId').val(dataUserEdit.profession)
-                // modal.find('#roleEditId').val(dataUserEdit.role)
                 let roleSelect = document.querySelector('select[name="roleEditId[]"]');
-                // Очистите все предыдущие выбранные опции
                 Array.from(roleSelect.options).forEach(option => option.selected = false);
 
-                // Установите выбранные опции на основе ролей пользователя
                 dataUserEdit.roles.forEach(role => {
                     if (role.role === "ROLE_ADMIN") {
                         roleSelect.querySelector('option[value="admin"]').selected = true;
@@ -114,7 +111,6 @@
                 modal.find('#nameDeleteId').val(dataUserEdit.name)
                 modal.find('#ageDeleteId').val(dataUserEdit.age)
                 modal.find('#professionDeleteId').val(dataUserEdit.profession)
-                // modal.find('#roleDeleteId').val(dataUserEdit.role)
                 let roleSelect = document.querySelector('select[name="roleDeleteId"]');
                 if (dataUserEdit.roles[0].role === "ROLE_ADMIN") {
                     roleSelect.value = "admin"
@@ -147,22 +143,17 @@
         const logoutButton = document.querySelector('input[type="submit"][value="logout"]');
 
         logoutButton.addEventListener('click', (event) => {
-            event.preventDefault(); // Предотвращаем стандартное поведение формы
+            event.preventDefault();
 
-            // Отправляем запрос на сервер для выхода из системы
             fetch('/logout', {
                 method: 'POST',
-                // Добавьте необходимые заголовки, если они требуются вашим сервером
             }).then(response => {
                 if (response.ok) {
-                    // Если сервер успешно обработал запрос, перенаправляем пользователя
-                    window.location.href = '/login'; // Или другой URL, куда нужно перенаправить пользователя
+                    window.location.href = '/login';
                 } else {
-                    // Обработка ошибок, если сервер вернул ошибку
                     console.error('Ошибка при попытке выхода из системы');
                 }
             }).catch(error => {
-                // Обработка ошибок сети
                 console.error('Ошибка сети при попытке выхода из системы');
             });
         });
@@ -174,39 +165,230 @@
             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                 <button class="nav-link active" id="v-pills-admin-tab" data-bs-toggle="pill"
                         data-bs-target="#v-pills-admin" type="button" role="tab"
-                        aria-controls="v-pills-admin" aria-selected="true">Admin</button>
+                        aria-controls="v-pills-admin" aria-selected="true">Admin
+                </button>
                 <button class="nav-link" id="v-pills-user-tab" data-bs-toggle="pill"
                         data-bs-target="#v-pills-user" type="button" role="tab"
-                        aria-controls="v-pills-user" aria-selected="false">User</button>
+                        aria-controls="v-pills-user" aria-selected="false">User
+                </button>
             </div>
         </div>
         <div class="col-9">
             <div class="tab-content" id="v-pills-tabContent">
                 <div class="tab-pane fade show active" id="v-pills-admin" role="tabpanel"
                      aria-labelledby="v-pills-admin-tab">
-                <!-- Содержимое для вкладки Admin -->
+                    <!-- Содержимое для вкладки Admin -->
+                    <div class="col-sm-10">
+                        <h1>Admin panel</h1>
+                        <div class="container">
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="users-table" data-bs-toggle="tab"
+                                            data-bs-target="#usersTable"
+                                            type="button" role="tab" aria-controls="userTable" aria-selected="true">
+                                        Users
+                                        table
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="new-user" data-bs-toggle="tab"
+                                            data-bs-target="#newUser"
+                                            type="button"
+                                            role="tab" aria-controls="newUser" aria-selected="false">New User
+                                    </button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="usersTable" role="tabpanel"
+                                     aria-labelledby="users-table">
+                                    <h3>All users</h3>
+                                    <table class="table table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th>Login</th>
+                                            <th>Name</th>
+                                            <th>Age</th>
+                                            <th>Profession</th>
+                                            <th>Roles</th>
+                                            <th>Update</th>
+                                            <th>Remove</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="usersTableBody">
+                                    </table>
+
+                                    <!-- Modal for update -->
+                                    <div class="modal fade" id="updateModal" tabindex="-1"
+                                         aria-labelledby="updateModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="updateModalLabel">Edit user</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body" id="updateModalBody">
+                                                    <form>
+                                                        <div class="mb-3">
+                                                            <label for="loginEditId" class="form-label">Login</label>
+                                                            <input type="text" class="form-control"
+                                                                   id="loginEditId" readonly>
+                                                            <br>
+
+                                                            <label for="passwordEditId"
+                                                                   class="form-label">Password</label>
+                                                            <input type="password" class="form-control"
+                                                                   id="passwordEditId">
+                                                            <br>
+
+                                                            <label for="nameEditId" class="form-label">Name</label>
+                                                            <input type="text" class="form-control"
+                                                                   id="nameEditId">
+                                                            <br>
+
+                                                            <label for="ageEditId" class="form-label">Age</label>
+                                                            <input type="text" class="form-control"
+                                                                   id="ageEditId">
+                                                            <br>
+
+                                                            <label for="professionEditId"
+                                                                   class="form-label">Profession</label>
+                                                            <input type="text" class="form-control"
+                                                                   id="professionEditId">
+                                                            <br>
+                                                            <select class="form-select" name="roleEditId[]"
+                                                                    aria-label="Default select example" multiple>
+                                                                <option value="user">User</option>
+                                                                <option value="admin">Admin</option>
+                                                            </select>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Close
+                                                    </button>
+                                                    <button type="button" class="btn btn-primary" id="buttonUpdateUser">
+                                                        Save
+                                                        changes
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Modal for delete -->
+                                    <div class="modal fade" id="deleteModal" tabindex="-1"
+                                         aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteModalLabel">Delete user</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body" id="deleteModalBody">
+                                                    <form>
+                                                        <div class="mb-3">
+                                                            <label for="loginDeleteId" class="form-label">Login</label>
+                                                            <input type="text" class="form-control"
+                                                                   id="loginDeleteId" readonly>
+                                                            <br>
+
+                                                            <label for="passwordDeleteId"
+                                                                   class="form-label">Password</label>
+                                                            <input type="password" class="form-control"
+                                                                   id="passwordDeleteId" readonly>
+                                                            <br>
+
+                                                            <label for="nameDeleteId" class="form-label">Name</label>
+                                                            <input type="text" class="form-control"
+                                                                   id="nameDeleteId" readonly>
+                                                            <br>
+
+                                                            <label for="ageDeleteId" class="form-label">Age</label>
+                                                            <input type="text" class="form-control"
+                                                                   id="ageDeleteId" readonly>
+                                                            <br>
+
+                                                            <label for="professionDeleteId"
+                                                                   class="form-label">Profession</label>
+                                                            <input type="text" class="form-control"
+                                                                   id="professionDeleteId" readonly>
+                                                            <br>
+                                                            <select class="form-select" name="roleDeleteId[]"
+                                                                    aria-label="Default select example" readonly
+                                                                    multiple>
+                                                                <option value="user">User</option>
+                                                                <option value="admin">Admin</option>
+                                                            </select>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Close
+                                                    </button>
+                                                    <form>
+                                                        <button type="button" class="btn btn-danger"
+                                                                id="buttonDeleteUser">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="newUser" role="tabpanel" aria-labelledby="new-user">
+                                    <h3>Add new user</h3>
+                                    <div class="container col-md-5">
+                                        <form id='registration' method="post">
+                                            <div class="mb-3">
+                                                <label for="loginNewUser" class="form-label">Login</label>
+                                                <input type="text" class="form-control" id="loginNewUser">
+                                                <br>
+
+                                                <label for="passwordNewUser" class="form-label">Password</label>
+                                                <input type="password" class="form-control" id="passwordNewUser">
+                                                <br>
+
+                                                <label for="nameNewUser" class="form-label">Name</label>
+                                                <input type="text" class="form-control" id="nameNewUser">
+                                                <br>
+
+                                                <label for="ageNewUser" class="form-label">Age</label>
+                                                <input type="text" class="form-control" id="ageNewUser">
+                                                <br>
+
+                                                <label for="professionNewUser" class="form-label">Profession</label>
+                                                <input type="text" class="form-control" id="professionNewUser">
+                                                <br>
+                                                <select class="form-select" name="roleNewUser[]"
+                                                        aria-label="Default select example" multiple>
+                                                    <option value="user">User</option>
+                                                    <option value="admin">Admin</option>
+                                                </select>
+                                                <input type="button" class="btn btn-success" id="submitNewUser"
+                                                       value="Add new user">
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="v-pills-user" role="tabpanel"
+                 aria-labelledby="v-pills-user-tab">
+                <!-- Содержимое для вкладки User -->
                 <div class="col-sm-10">
-                    <h1>Admin panel</h1>
+                    <h1>User information-page</h1>
                     <div class="container">
-                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="users-table" data-bs-toggle="tab"
-                                        data-bs-target="#usersTable"
-                                        type="button" role="tab" aria-controls="userTable" aria-selected="true">Users
-                                    table
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="new-user" data-bs-toggle="tab" data-bs-target="#newUser"
-                                        type="button"
-                                        role="tab" aria-controls="newUser" aria-selected="false">New User
-                                </button>
-                            </li>
-                        </ul>
-                        <div class="tab-content" id="myTabContent">
-                            <div class="tab-pane fade show active" id="usersTable" role="tabpanel"
-                                 aria-labelledby="users-table">
-                                <h3>All users</h3>
+                        <div class="tab-content" id="myTabUserContent">
+                            <div class="tab-pane fade show active" id="userTable" role="tabpanel"
+                                 aria-labelledby="user-table">
+                                <h3>About user</h3>
                                 <table class="table table-hover">
                                     <thead>
                                     <tr>
@@ -214,199 +396,16 @@
                                         <th>Name</th>
                                         <th>Age</th>
                                         <th>Profession</th>
-                                        <th>Roles</th>
-                                        <th>Update</th>
-                                        <th>Remove</th>
+                                        <th>Role</th>
                                     </tr>
                                     </thead>
-                                    <tbody id="usersTableBody">
+                                    <tbody id="userTableBody">
                                 </table>
-
-                                <!-- Modal for update -->
-                                <div class="modal fade" id="updateModal" tabindex="-1"
-                                     aria-labelledby="updateModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="updateModalLabel">Edit user</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body" id="updateModalBody">
-                                                <form>
-                                                    <div class="mb-3">
-                                                        <label for="loginEditId" class="form-label">Login</label>
-                                                        <input type="text" class="form-control"
-                                                               id="loginEditId" readonly>
-                                                        <br>
-
-                                                        <label for="passwordEditId" class="form-label">Password</label>
-                                                        <input type="password" class="form-control"
-                                                               id="passwordEditId">
-                                                        <br>
-
-                                                        <label for="nameEditId" class="form-label">Name</label>
-                                                        <input type="text" class="form-control"
-                                                               id="nameEditId">
-                                                        <br>
-
-                                                        <label for="ageEditId" class="form-label">Age</label>
-                                                        <input type="text" class="form-control"
-                                                               id="ageEditId">
-                                                        <br>
-
-                                                        <label for="professionEditId"
-                                                               class="form-label">Profession</label>
-                                                        <input type="text" class="form-control"
-                                                               id="professionEditId">
-                                                        <br>
-                                                        <select class="form-select" name="roleEditId[]"
-                                                                aria-label="Default select example" multiple>
-                                                            <option value="user">User</option>
-                                                            <option value="admin">Admin</option>
-                                                        </select>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">Close
-                                                </button>
-                                                <button type="button" class="btn btn-primary" id="buttonUpdateUser">Save
-                                                    changes
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Modal for delete -->
-                                <div class="modal fade" id="deleteModal" tabindex="-1"
-                                     aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="deleteModalLabel">Delete user</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body" id="deleteModalBody">
-                                                <form>
-                                                    <div class="mb-3">
-                                                        <label for="loginDeleteId" class="form-label">Login</label>
-                                                        <input type="text" class="form-control"
-                                                               id="loginDeleteId" readonly>
-                                                        <br>
-
-                                                        <label for="passwordDeleteId"
-                                                               class="form-label">Password</label>
-                                                        <input type="password" class="form-control"
-                                                               id="passwordDeleteId" readonly>
-                                                        <br>
-
-                                                        <label for="nameDeleteId" class="form-label">Name</label>
-                                                        <input type="text" class="form-control"
-                                                               id="nameDeleteId" readonly>
-                                                        <br>
-
-                                                        <label for="ageDeleteId" class="form-label">Age</label>
-                                                        <input type="text" class="form-control"
-                                                               id="ageDeleteId" readonly>
-                                                        <br>
-
-                                                        <label for="professionDeleteId"
-                                                               class="form-label">Profession</label>
-                                                        <input type="text" class="form-control"
-                                                               id="professionDeleteId" readonly>
-                                                        <br>
-                                                        <select class="form-select" name="roleDeleteId[]"
-                                                                aria-label="Default select example" readonly multiple>
-                                                            <option value="user">User</option>
-                                                            <option value="admin">Admin</option>
-                                                        </select>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">Close
-                                                </button>
-                                                <form>
-                                                    <button type="button" class="btn btn-danger" id="buttonDeleteUser">
-                                                        Delete
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="newUser" role="tabpanel" aria-labelledby="new-user">
-                                <h3>Add new user</h3>
-                                <div class="container col-md-5">
-                                    <form id='registration' method="post">
-                                        <div class="mb-3">
-                                            <label for="loginNewUser" class="form-label">Login</label>
-                                            <input type="text" class="form-control" id="loginNewUser">
-                                            <br>
-
-                                            <label for="passwordNewUser" class="form-label">Password</label>
-                                            <input type="password" class="form-control" id="passwordNewUser">
-                                            <br>
-
-                                            <label for="nameNewUser" class="form-label">Name</label>
-                                            <input type="text" class="form-control" id="nameNewUser">
-                                            <br>
-
-                                            <label for="ageNewUser" class="form-label">Age</label>
-                                            <input type="text" class="form-control" id="ageNewUser">
-                                            <br>
-
-                                            <label for="professionNewUser" class="form-label">Profession</label>
-                                            <input type="text" class="form-control" id="professionNewUser">
-                                            <br>
-                                            <select class="form-select" name="roleNewUser[]"
-                                                    aria-label="Default select example" multiple>
-                                                <option value="user">User</option>
-                                                <option value="admin">Admin</option>
-                                            </select>
-                                            <input type="button" class="btn btn-success" id="submitNewUser"
-                                                   value="Add new user">
-                                        </div>
-                                    </form>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            </div>
-            <div class="tab-pane fade" id="v-pills-user" role="tabpanel"
-                 aria-labelledby="v-pills-user-tab">
-            <!-- Содержимое для вкладки User -->
-            <div class="col-sm-10">
-                <h1>User information-page</h1>
-                <div class="container">
-                    <div class="tab-content" id="myTabUserContent">
-                        <div class="tab-pane fade show active" id="userTable" role="tabpanel"
-                             aria-labelledby="user-table">
-                            <h3>About user</h3>
-                            <table class="table table-hover">
-                                <thead>
-                                <tr>
-                                    <th>Login</th>
-                                    <th>Name</th>
-                                    <th>Age</th>
-                                    <th>Profession</th>
-                                    <th>Role</th>
-                                </tr>
-                                </thead>
-                                <tbody id="userTableBody">
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
             <script type="text/javascript">
                 document.querySelector('#submitNewUser').addEventListener('click', () => {
                     // Получение значений из полей формы
@@ -420,20 +419,19 @@
                     let selectedRoles = Array.from(document.querySelector('select[name="roleNewUser[]"]').selectedOptions)
                         .map(option => option.value);
 
-                    // Создание объекта редактируемого пользователя
+                    // Создание объекта нового пользователя
                     let newUser = {
                         login: login,
                         password: password,
                         name: name,
                         age: age,
                         profession: profession,
-                        roles: selectedRoles // Теперь roles это массив
+                        roles: selectedRoles
                     };
                     console.log(newUser);
 
-                    // Отправка данных на сервер
                     $.ajax({
-                        url: "/admin", // Убедитесь, что это правильный URL
+                        url: "/admin",
                         method: 'POST',
                         contentType: 'application/json',
                         data: JSON.stringify(newUser),
@@ -442,14 +440,12 @@
                             if (response.status === "errorLogin") {
                                 alert("Логин уже занят")
                             } else {
-                                // TODO: Обновление интерфейса пользователя или сообщение об успешном редактировании
                                 alert("Registration success")
                                 getUsers();
                                 $('#myTab a[href="#myTabContent"]').tab('show');
                             }
                         },
                         error: function (error) {
-                            // TODO: Обработка ошибок при отправке данных
                             alert("Something was wrong...")
                             console.error(error);
                         }
@@ -476,91 +472,88 @@
                         name: name,
                         age: age,
                         profession: profession,
-                        roles: selectedRoles // Теперь roles это массив
+                        roles: selectedRoles
                     };
                     console.log(updateUser);
 
-                    // Отправка данных на сервер
                     $.ajax({
-                        url: "/admin/edit", // Убедитесь, что это правильный URL
+                        url: "/admin/edit",
                         method: 'POST',
                         contentType: 'application/json',
                         data: JSON.stringify(updateUser),
                         success: function (response) {
                             console.log(response);
-                            // TODO: Обновление интерфейса пользователя или сообщение об успешном редактировании
                             getUsers();
                             $('#updateModal').modal('hide');
                         },
                         error: function (error) {
-                            // TODO: Обработка ошибок при отправке данных
                             console.error(error);
                         }
                     });
                 });
             </script>
-        <script type="text/javascript">
-            document.querySelector('#buttonDeleteUser').addEventListener('click', () => {
-                // Получение значений из полей формы
-                let login = document.querySelector('#loginDeleteId').value;
-                let password = document.querySelector('#passwordDeleteId').value;
-                let name = document.querySelector('#nameDeleteId').value;
-                let age = document.querySelector('#ageDeleteId').value;
-                let profession = document.querySelector('#professionDeleteId').value;
-                let selectedRoles = Array.from(document.querySelector('select[name="roleDeleteId[]"]').selectedOptions)
-                    .map(option => option.value);
+            <script type="text/javascript">
+                document.querySelector('#buttonDeleteUser').addEventListener('click', () => {
+                    // Получение значений из полей формы
+                    let login = document.querySelector('#loginDeleteId').value;
+                    let password = document.querySelector('#passwordDeleteId').value;
+                    let name = document.querySelector('#nameDeleteId').value;
+                    let age = document.querySelector('#ageDeleteId').value;
+                    let profession = document.querySelector('#professionDeleteId').value;
+                    let selectedRoles = Array.from(document.querySelector('select[name="roleDeleteId[]"]').selectedOptions)
+                        .map(option => option.value);
 
-                // Создание объекта нового пользователя
-                let newUser = {
-                    login: login,
-                    password: password,
-                    name: name,
-                    age: age,
-                    profession: profession,
-                    roles: selectedRoles
-                };
-                console.log(newUser);
+                    // Создание объекта пользователя для удаления
+                    let deleteUser = {
+                        login: login,
+                        password: password,
+                        name: name,
+                        age: age,
+                        profession: profession,
+                        roles: selectedRoles
+                    };
+                    console.log(deleteUser);
 
-                // Отправка данных на сервер
-                $.ajax({
-                    url: "/admin/delete", // Убедитесь, что это правильный URL
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(newUser),
-                    success: function (response) {
-                        console.log(response);
-                        // TODO: Обновление интерфейса пользователя или сообщение об успешном редактировании
-                        getUsers();
-                        $('#deleteModal').modal('hide');
-                    },
-                    error: function (error) {
-                        // TODO: Обработка ошибок при отправке данных
-                        console.error(error);
-                    }
-                });
-            });
-        </script>
-        <script>
-            $(document).ready(function () {
-                $.get('/get_user', function (dataCurrentUser) {
-                    console.log(dataCurrentUser)
-                    var usersTable = document.getElementById('userTableBody');
-                    var user = "<td>" + dataCurrentUser.login + "</td><td>"
-                        + dataCurrentUser.name + "</td><td>" + dataCurrentUser.age + "</td><td>" +
-                        dataCurrentUser.profession + "</td><td>";
-                    for (j = 0; j < dataCurrentUser.roles.length; j++) {
-                        if (j > 0) {
-                            user = user + ", "
+                    $.ajax({
+                        url: "/admin/delete",
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(deleteUser),
+                        success: function (response) {
+                            console.log(response);
+                            getUsers();
+                            $('#deleteModal').modal('hide');
+                        },
+                        error: function (error) {
+                            console.error(error);
                         }
-                        user = user + dataCurrentUser.roles[j].role;
-                    }
-                    usersTable.innerHTML = user;
-                })
-            });
-        </script>
+                    });
+                });
+            </script>
+            <script>
+                $(document).ready(function () {
+                    $.get('/get_user', function (dataCurrentUser) {
+                        console.log(dataCurrentUser)
+                        var usersTable = document.getElementById('userTableBody');
+                        var user = "<td>" + dataCurrentUser.login + "</td><td>"
+                            + dataCurrentUser.name + "</td><td>" + dataCurrentUser.age + "</td><td>" +
+                            dataCurrentUser.profession + "</td><td>";
+                        for (j = 0; j < dataCurrentUser.roles.length; j++) {
+                            if (j > 0) {
+                                user = user + ", "
+                            }
+                            user = user + dataCurrentUser.roles[j].role;
+                        }
+                        usersTable.innerHTML = user;
+                    })
+                });
+            </script>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-                integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-                crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+                    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+                    crossorigin="anonymous"></script>
+        </div>
+    </div>
+</div>
 </body>
 </html>

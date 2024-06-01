@@ -3,14 +3,11 @@ package com.example.SpringCRUD.controller;
 import com.example.SpringCRUD.domain.User;
 import com.example.SpringCRUD.dto.UserDTO;
 import com.example.SpringCRUD.service.UserService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-//@RequestMapping("/admin")
 public class AdminController {
     private final UserService userService;
 
