@@ -1,6 +1,5 @@
 package com.example.SpringCRUD.service;
 
-import com.example.SpringCRUD.dto.UserDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
@@ -8,25 +7,25 @@ import java.util.Map;
 
 @Service
 public class TaxService {
+    private static final Map<Integer, Double> TAX_STEPS_OLD = new LinkedHashMap<>();
+    static {
+        TAX_STEPS_OLD.put(5000000, 0.15);
+        TAX_STEPS_OLD.put(0, 0.13);
+    }
+    private static final Map<Integer, Double> TAX_STEPS_NEW = new LinkedHashMap<>();
+    static {
+        TAX_STEPS_NEW.put(50000000, 0.22);
+        TAX_STEPS_NEW.put(20000000, 0.20);
+        TAX_STEPS_NEW.put(5000000, 0.18);
+        TAX_STEPS_NEW.put(2400000, 0.15);
+        TAX_STEPS_NEW.put(0, 0.13);
+    }
     public double countOldTax(double salary) {
-        Map<Integer, Double> TAX_STEPS = new LinkedHashMap<>();
-        {
-            TAX_STEPS.put(5000000, 0.15);
-            TAX_STEPS.put(0, 0.13);
-        }
-        return countTax(salary, TAX_STEPS);
+        return countTax(salary, TAX_STEPS_OLD);
     }
 
     public double countNewTax(double salary) {
-        Map<Integer, Double> TAX_STEPS = new LinkedHashMap<>();
-        {
-            TAX_STEPS.put(50000000, 0.22);
-            TAX_STEPS.put(20000000, 0.20);
-            TAX_STEPS.put(5000000, 0.18);
-            TAX_STEPS.put(2400000, 0.15);
-            TAX_STEPS.put(0, 0.13);
-        }
-        return countTax(salary, TAX_STEPS);
+        return countTax(salary, TAX_STEPS_NEW);
     }
     private double countTax(double salary, Map<Integer, Double> TAX_STEPS) {
         if (salary <= 0) {
