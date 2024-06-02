@@ -43,6 +43,6 @@ public class TaxService {
                 salary = step.getKey();
             }
         }
-        return tax;
+        return tax / MONTHS;
     }
 }
