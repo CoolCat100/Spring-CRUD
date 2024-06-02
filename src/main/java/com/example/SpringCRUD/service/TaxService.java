@@ -3,54 +3,44 @@ package com.example.SpringCRUD.service;
 import com.example.SpringCRUD.dto.UserDTO;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 @Service
 public class TaxService {
     public double countOldTax(double salary) {
-        double tax = 0;
-        int delimiterTax = 416700;
-        double firstStepTax = 0.13;
-        double secondStepTax = 0.15;
-        if (salary > delimiterTax) {
-            double salaryForTax = salary - delimiterTax;
-            tax = salaryForTax * secondStepTax;
-            salary = salary - salaryForTax;
+        Map<Integer, Double> TAX_STEPS = new LinkedHashMap<>();
+        {
+            TAX_STEPS.put(416700, 0.15);
+            TAX_STEPS.put(0, 0.13);
         }
-        tax = tax + (salary * firstStepTax);
-        return tax;
+        return countTax(salary, TAX_STEPS);
     }
 
     public double countNewTax(double salary) {
+        Map<Integer, Double> TAX_STEPS = new LinkedHashMap<>();
+        {
+            TAX_STEPS.put(4170000, 0.22);
+            TAX_STEPS.put(1670000, 0.20);
+            TAX_STEPS.put(416700, 0.18);
+            TAX_STEPS.put(200000, 0.15);
+            TAX_STEPS.put(0, 0.13);
+        }
+        return countTax(salary, TAX_STEPS);
+    }
+    private double countTax(double salary, Map<Integer, Double> TAX_STEPS) {
+        if (salary <= 0) {
+            throw new IllegalArgumentException("Зарплата должна быть больше нуля");
+        }
+
         double tax = 0;
-        int firstTaxDelimiter = 200000;
-        int secondTaxDelimiter = 416700;
-        int thirdTaxDelimiter = 1670000;
-        int forthTaxDelimiter = 4170000;
-        double firstStepTax = 0.13;
-        double secondStepTax = 0.15;
-        double thirdStepTax = 0.18;
-        double forthStepTax = 0.2;
-        double fifthStepTax = 0.22;
-        if (salary > forthTaxDelimiter) {
-            double salaryForTax = salary - forthTaxDelimiter;
-            tax = tax + salaryForTax * fifthStepTax;
-            salary = salary - salaryForTax;
+
+        for (Map.Entry<Integer, Double> bracket : TAX_STEPS.entrySet()) {
+            if (salary > bracket.getKey()) {
+                tax += (salary - bracket.getKey()) * bracket.getValue();
+                salary = bracket.getKey();
+            }
         }
-        if (salary > thirdTaxDelimiter) {
-            double salaryForTax = salary - thirdTaxDelimiter;
-            tax = tax + salaryForTax * forthStepTax;
-            salary = salary - salaryForTax;
-        }
-        if (salary > secondTaxDelimiter) {
-            double salaryForTax = salary - secondTaxDelimiter;
-            tax = tax + salaryForTax * thirdStepTax;
-            salary = salary - salaryForTax;
-        }
-        if (salary > firstTaxDelimiter) {
-            double salaryForTax = salary - firstTaxDelimiter;
-            tax = tax + salaryForTax * secondStepTax;
-            salary = salary - salaryForTax;
-        }
-        tax = tax + (salary * firstStepTax);
         return tax;
     }
 }
