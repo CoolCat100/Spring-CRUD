@@ -35,10 +35,10 @@ public class TaxService {
 
         double tax = 0;
 
-        for (Map.Entry<Integer, Double> bracket : TAX_STEPS.entrySet()) {
-            if (salary > bracket.getKey()) {
-                tax += (salary - bracket.getKey()) * bracket.getValue();
-                salary = bracket.getKey();
+        for (Map.Entry<Integer, Double> step : TAX_STEPS.entrySet()) {
+            if (salary > step.getKey()) {
+                tax += (salary - step.getKey()) * step.getValue();
+                salary = step.getKey();
             }
         }
         return tax;
