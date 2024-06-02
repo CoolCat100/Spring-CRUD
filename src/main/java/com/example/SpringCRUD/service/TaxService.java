@@ -7,6 +7,7 @@ import java.util.Map;
 
 @Service
 public class TaxService {
+    private static final int MONTHS = 12;
     private static final Map<Integer, Double> TAX_STEPS_OLD = new LinkedHashMap<>();
     static {
         TAX_STEPS_OLD.put(5000000, 0.15);
@@ -21,11 +22,13 @@ public class TaxService {
         TAX_STEPS_NEW.put(0, 0.13);
     }
     public double countOldTax(double salary) {
-        return countTax(salary, TAX_STEPS_OLD);
+        double yearSalary = salary * MONTHS;
+        return countTax(yearSalary, TAX_STEPS_OLD);
     }
 
     public double countNewTax(double salary) {
-        return countTax(salary, TAX_STEPS_NEW);
+        double yearSalary = salary * MONTHS;
+        return countTax(yearSalary, TAX_STEPS_NEW);
     }
     private double countTax(double salary, Map<Integer, Double> TAX_STEPS) {
         if (salary <= 0) {
