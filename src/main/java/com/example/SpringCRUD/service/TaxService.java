@@ -43,6 +43,6 @@ public class TaxService {
                 salary = step.getKey();
             }
         }
-        return tax / MONTHS;
+        return Double.parseDouble(String.format("%.2f", tax / MONTHS));
     }
 }
