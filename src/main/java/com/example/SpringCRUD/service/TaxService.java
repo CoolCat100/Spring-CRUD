@@ -11,7 +11,7 @@ public class TaxService {
     public double countOldTax(double salary) {
         Map<Integer, Double> TAX_STEPS = new LinkedHashMap<>();
         {
-            TAX_STEPS.put(416700, 0.15);
+            TAX_STEPS.put(5000000, 0.15);
             TAX_STEPS.put(0, 0.13);
         }
         return countTax(salary, TAX_STEPS);
@@ -20,10 +20,10 @@ public class TaxService {
     public double countNewTax(double salary) {
         Map<Integer, Double> TAX_STEPS = new LinkedHashMap<>();
         {
-            TAX_STEPS.put(4170000, 0.22);
-            TAX_STEPS.put(1670000, 0.20);
-            TAX_STEPS.put(416700, 0.18);
-            TAX_STEPS.put(200000, 0.15);
+            TAX_STEPS.put(50000000, 0.22);
+            TAX_STEPS.put(20000000, 0.20);
+            TAX_STEPS.put(5000000, 0.18);
+            TAX_STEPS.put(2400000, 0.15);
             TAX_STEPS.put(0, 0.13);
         }
         return countTax(salary, TAX_STEPS);
