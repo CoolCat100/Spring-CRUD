@@ -16,7 +16,7 @@
                     if (i > 0) {
                         userString = userString + ", "
                     }
-                    userString = userString + dataCurrentUser.roles[i].role;
+                    userString = userString + dataCurrentUser.roles[i];
                 }
                 userString = userString + "</td>"
                 $("#currentUser").html(userString);
@@ -24,12 +24,13 @@
                 var usersTable = document.getElementById('usersTableBody');
                 var user = "<td>" + dataCurrentUser.login + "</td><td>"
                             + dataCurrentUser.name + "</td><td>" + dataCurrentUser.age + "</td><td>" +
-                    dataCurrentUser.profession + "</td><td>";
+                    dataCurrentUser.profession + "</td><td>" + dataCurrentUser.salary + "</td><td>" +
+                    dataCurrentUser.oldTax + "</td><td>" + dataCurrentUser.newTax + "</td><td>";
                         for (j = 0; j < dataCurrentUser.roles.length; j++) {
                             if (j > 0) {
                                 user = user + ", "
                             }
-                            user = user + dataCurrentUser.roles[j].role;
+                            user = user + dataCurrentUser.roles[j];
                         }
                 usersTable.innerHTML = user;
             })
@@ -45,7 +46,8 @@
                     <span id="currentUser"></span>
                     <form class="float-end">
                         <label>
-                            <input class="btn btn-secondary" type="submit" value="logout">
+                            <!-- Добавляем атрибут onclick непосредственно к кнопке -->
+                            <input class="btn btn-secondary" type="button" value="logout" onclick="logoutUser()">
                         </label>
                     </form>
                 </a>
@@ -54,25 +56,21 @@
     </div>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const logoutButton = document.querySelector('input[type="submit"][value="logout"]');
-
-        logoutButton.addEventListener('click', (event) => {
-            event.preventDefault();
-
-            fetch('/logout', {
-                method: 'POST',
-            }).then(response => {
-                if (response.ok) {
-                    window.location.href = '/login';
-                } else {
-                    console.error('Ошибка при попытке выхода из системы');
-                }
-            }).catch(error => {
-                console.error('Ошибка сети при попытке выхода из системы');
-            });
+    // Определяем функцию logoutUser для обработки выхода из системы
+    function logoutUser() {
+        $.ajax({
+            url: '/out',
+            type: 'POST',
+            contentType: 'application/json',
+            data:JSON.stringify({ action: "logout" }),
+            success: function() {
+                window.location.href = '/login';
+            },
+            error: function() {
+                console.error('Ошибка при попытке выхода из системы');
+            }
         });
-    });
+    }
 </script>
 <div class="container-fluid">
     <div class="row">
@@ -98,6 +96,9 @@
                                 <th>Name</th>
                                 <th>Age</th>
                                 <th>Profession</th>
+                                <th>Salary</th>
+                                <th>Old tax</th>
+                                <th>New tax</th>
                                 <th>Role</th>
                             </tr>
                             </thead>

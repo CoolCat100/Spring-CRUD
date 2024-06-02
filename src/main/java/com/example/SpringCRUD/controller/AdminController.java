@@ -15,11 +15,11 @@ public class AdminController {
         this.userService = userService;
     }
     @RequestMapping(method = RequestMethod.GET, value = "/get_user")
-    public User getUser() {
+    public UserDTO getUser() {
         return userService.getCurrentUser();
     }
     @RequestMapping(method = RequestMethod.GET, value = "/get_users")
-    public List<User> showUsers() {
+    public List<UserDTO> showUsers() {
         return userService.getUsers();
     }
     @RequestMapping(method = RequestMethod.POST, value = "/admin", produces = "application/json")

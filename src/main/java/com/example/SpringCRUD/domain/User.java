@@ -27,16 +27,18 @@ public class User implements UserDetails {
     private String name;
     private int age;
     private String profession;
+    private int salary;
     @NaturalId
     private String login; // уникальное значение
     private String password;
     @ManyToMany(fetch = FetchType.EAGER)
     @JsonManagedReference
     private Set<Role> roles;
-    public User(String name, int age, String profession, String login, String password, Set<Role> roles) {
+    public User(String name, int age, String profession, int salary, String login, String password, Set<Role> roles) {
         this.name = name;
         this.age = age;
         this.profession = profession;
+        this.salary = salary;
         this.login = login;
         this.password = password;
         this.roles = roles;

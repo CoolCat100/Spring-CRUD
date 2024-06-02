@@ -11,11 +11,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class MappingUtils {
-//    public UserDTO mapToUserDTO(User user) {
-//        UserDTO userDTO = new UserDTO();
-//        Set<Role> userRoles = user.getRoles();
-//        Set<String> roles = userRoles.stream().map(Role::getRole).collect(Collectors.toSet());
-//        userDTO.setRoles(roles);
-//        return userDTO;
-//    }
+    private final TaxService taxService;
+
+    public MappingUtils(TaxService taxService) {
+        this.taxService = taxService;
+    }
+
+    public UserDTO mapToUserDTO(User user) {
+        String[] roles = user.getRoles().stream().map(Role::getRole).toArray(String[]::new);
+        return new UserDTO(user.getId(), user.getName(), user.getAge(), user.getProfession(), user.getSalary(),
+                taxService.countOldTax(user.getSalary()), taxService.countNewTax(user.getSalary()), user.getLogin(),
+                user.getPassword(), roles);
+    }
 }

@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 
 @Service
 public class UserService implements UserDetailsService {
@@ -30,11 +33,14 @@ public class UserService implements UserDetailsService {
     }
 
     private void createAdminId() {
+        if (roleService.getRolesFromDB().isEmpty()) {
+            roleService.createRoles();
+        }
         if (userRepo.findByLogin("Den") == null) {
             Role role = new Role(2L, "ROLE_ADMIN");
             Set<Role> roles = new HashSet<>();
             roles.add(role);
-            User user = new User("Den", 25, "Admin", "Den", "123", roles);
+            User user = new User("Den", 25, "Admin", 1, "Den", "123", roles);
             user.setRoles(Collections.singleton(new Role(2L, "ROLE_ADMIN")));
             String pass = SecurityConfig.passwordEncoder().encode(user.getPassword());
             user.setPassword(pass);
@@ -42,8 +48,10 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public List<User> getUsers() {
-        return (List<User>) userRepo.findAll();
+    public List<UserDTO> getUsers() {
+        return StreamSupport.stream(userRepo.findAll().spliterator(), false)
+                .map(mappingUtils::mapToUserDTO)
+                .collect(Collectors.toList());
     }
 
     public User getUser(long id) {
@@ -51,23 +59,33 @@ public class UserService implements UserDetailsService {
     }
     public void updateUser(UserDTO user) {
         User oldUser = userRepo.findByLogin(user.getLogin());
-        Set<Role> roles = new HashSet<>();
-        for (String role : user.getRoles()) {
-            if (role.equals("user")) {
-                roles.add(new Role(1L, "ROLE_USER"));
-            }
-            if (role.equals("admin")) {
-                roles.add(new Role(2L, "ROLE_ADMIN"));
-            }
-        }
-        oldUser.setRoles(roles);
+        Set<Role> currentRoles = oldUser.getRoles();
+
         oldUser.setName(user.getName());
         oldUser.setAge(user.getAge());
         oldUser.setProfession(user.getProfession());
-        if (user.getPassword() != null) {
+        oldUser.setSalary(user.getSalary());
+
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             String newPass = SecurityConfig.passwordEncoder().encode(user.getPassword());
             oldUser.setPassword(newPass);
         }
+
+        if (user.getRoles() != null) {
+            Set<Role> newRoles = new HashSet<>();
+            for (String role : user.getRoles()) {
+                if (role.equals("user")) {
+                    newRoles.add(new Role(1L, "ROLE_USER"));
+                }
+                if (role.equals("admin")) {
+                    newRoles.add(new Role(2L, "ROLE_ADMIN"));
+                }
+            }
+            oldUser.setRoles(newRoles);
+        } else {
+            oldUser.setRoles(currentRoles);
+        }
+
         userRepo.save(oldUser);
     }
 
@@ -92,12 +110,12 @@ public class UserService implements UserDetailsService {
         return auth.getName();
     }
 
-    public User getCurrentUser() {
-        return userRepo.findByLogin(getCurrentUsername());
+    public UserDTO getCurrentUser() {
+        return mappingUtils.mapToUserDTO(userRepo.findByLogin(getCurrentUsername()));
     }
 
     public boolean addUserDto(UserDTO user) {
-        User newUser = new User(user.getName(), user.getAge(), user.getProfession(), user.getLogin(), null, null);
+        User newUser = new User(user.getName(), user.getAge(), user.getProfession(), user.getSalary(), user.getLogin(), null, null);
 
         if (getUsers().stream().anyMatch(users -> user.getLogin().equals(users.getLogin()))) {
             System.out.println("false");

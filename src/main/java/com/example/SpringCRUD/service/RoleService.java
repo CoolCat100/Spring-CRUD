@@ -19,6 +19,10 @@ public class RoleService {
         List<Role> roles = (List<Role>) roleRepo.findAll();
         return roles.stream().map(Role::getRole).collect(Collectors.toList());
     }
+    public void createRoles() {
+        roleRepo.save(new Role(1L, "ROLE_USER"));
+        roleRepo.save(new Role(2L, "ROLE_ADMIN"));
+    }
     public Role getRoleById(long id) {
         return roleRepo.findById(id).orElse(null);
     }
