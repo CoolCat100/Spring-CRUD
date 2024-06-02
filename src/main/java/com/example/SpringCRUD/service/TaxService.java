@@ -3,6 +3,7 @@ package com.example.SpringCRUD.service;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -43,6 +44,6 @@ public class TaxService {
                 salary = step.getKey();
             }
         }
-        return Double.parseDouble(String.format("%.2f", tax / MONTHS));
+        return Double.parseDouble(String.format(Locale.ENGLISH, "%.2f", tax / MONTHS));
     }
 }
