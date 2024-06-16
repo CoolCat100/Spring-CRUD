@@ -1,4 +1,6 @@
 spring:
+  liquibase:
+    enabled: true
   application:
      name: crudUsers
   datasource:
@@ -11,4 +13,4 @@ spring:
        hibernate:
          dialect: org.hibernate.dialect.PostgreSQL9Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
